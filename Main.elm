@@ -3,6 +3,8 @@ module Main exposing (main)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 
+import Projects exposing (Project, projects)
+
 main : Program Never Model Msg
 main =
     Html.program
@@ -16,16 +18,10 @@ type alias Model =
     { projects : List Project
     }
 
-type alias Project =
-    { name : String,
-      url : String,
-      readmeSnippet : String
-    }
 
 emptyModel : Model
 emptyModel =
-    { projects = []
-    }
+    { projects = projects }
 
 init : (Model, Cmd Msg)
 init = emptyModel ! []
@@ -39,8 +35,27 @@ update msg model =
         NoOp ->
             model ! []
 
+endl : Html msg
+endl = br [] []
+
+heading : String -> Html msg
+heading title =
+    h2
+        []
+        [ text title ]
+
+displayProject : Project -> Html msg
+displayProject project =
+    div
+        [ class <| "project" ++ project.name ]
+        [ heading project.name,
+          text project.url,
+          endl,
+          text project.readmeSnippet
+        ]
+
 view : Model -> Html Msg
 view model =
     div
         [ class "dashboard-wrapper" ]
-        [ text "Success!" ]
+        (List.map displayProject model.projects)
